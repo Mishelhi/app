@@ -8,7 +8,7 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
-
+import 'package:timezone/data/latest.dart' as ta;
 import 'reminder_sheet_textfield.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -73,7 +73,7 @@ class _BottomReminderSheetState extends State<BottomReminderSheet> {
 
   Future<void> scheduleNotificationBasedOnTime() async {
     getDuration();
-
+    ta.initializeTimeZones();
     var scheduledNotificationDateTime =
         DateTime.now().add(Duration(hours: hours!, minutes: minutes!));
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -87,12 +87,12 @@ class _BottomReminderSheetState extends State<BottomReminderSheet> {
     // var platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics, iOS: IOSNotificationDetails);
     var platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-    // ignore: deprecated_member_use
     await flutterLocalNotificationsPlugin.zonedSchedule(
         0,
         titleTextController.text,
         descriptionTextController.text,
-        tz.TZDateTime.from(scheduledNotificationDateTime.toLocal(), tz.local),
+        tz.TZDateTime.from(scheduledNotificationDateTime.toLocal(),
+            scheduledNotificationDateTime.timeZoneName as tz.Location),
         platformChannelSpecifics,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime);
